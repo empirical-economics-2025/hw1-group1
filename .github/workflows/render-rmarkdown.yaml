@@ -26,17 +26,29 @@ jobs:
         run: |
           Rscript -e 'install.packages(c("rmarkdown", "quarto"))'
 
-      - name: Render document
-        run: |
-          if [ -f "*.qmd" ]; then
-            quarto render
-          elif [ -f "*.Rmd" ]; then
-            Rscript -e 'rmarkdown::render(list.files(pattern = "\\.Rmd$")[1])'
-          fi
+      - name: Create _site directory
+        run: mkdir -p _site
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Render .qmd files using Quarto CLI
+        run: |
+          for file in $(find . -name "*.qmd"); do
+            quarto render "$file" --output-dir "_site"
+          done
+
+      - name: Render .Rmd files using rmarkdown
+        run: |
+          Rscript -e '
+            fs::dir_create("_site")
+            rmds <- list.files(".", pattern = "\\\\.Rmd$", recursive = TRUE, full.names = TRUE)
+            for (f in rmds) {
+              rmarkdown::render(f, output_dir = "_site")
+            }
+          '
+        shell: Rscript {0}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
           publish_branch: gh-pages
-          publish_dir: ./  # adjust if HTML goes into a subfolder
