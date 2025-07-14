@@ -1,9 +1,7 @@
 on: 
   push:
     branches:
-    - master
-    paths:
-    - 'hw1.Rmd'  
+    - main
 name: Check Repo
 jobs:
   allowed-files:

@@ -2,7 +2,7 @@ name: Render and Deploy
 
 on:
   push:
-    branches: [master]  # or "master" or whichever branch you use
+    branches: [main]  # or "master" or whichever branch you use
     
 permissions:
     contents: write
