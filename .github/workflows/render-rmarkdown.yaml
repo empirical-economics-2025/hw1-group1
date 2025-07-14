@@ -3,6 +3,10 @@ name: Render and Deploy
 on:
   push:
     branches: [main]  # or "master" or whichever branch you use
+    
+permissions:
+    contents: write
+    pages: write
 
 jobs:
   build-deploy:
@@ -29,12 +33,7 @@ jobs:
           elif [ -f "*.Rmd" ]; then
             Rscript -e 'rmarkdown::render(list.files(pattern = "\\.Rmd$")[1])'
           fi
-      - name: Authenticate with git
-        env: 
-          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "noreply@github.com"
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
