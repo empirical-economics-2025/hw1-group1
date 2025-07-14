@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          Rscript -e 'install.packages(c("rmarkdown", "quarto"))'
+          Rscript -e 'install.packages(c("quarto"))'
 
       - name: Create _site directory
         run: mkdir -p _site
@@ -34,17 +34,6 @@ jobs:
           for file in $(find . -name "*.qmd"); do
             quarto render "$file" --output-dir "_site"
           done
-
-      - name: Render .Rmd files using rmarkdown
-        run: |
-          Rscript -e '
-            fs::dir_create("_site")
-            rmds <- list.files(".", pattern = "\\\\.Rmd$", recursive = TRUE, full.names = TRUE)
-            for (f in rmds) {
-              rmarkdown::render(f, output_dir = "_site")
-            }
-          '
-        shell: Rscript {0}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
